@@ -27,8 +27,12 @@ router.get('/', auth, async (req, res) => {
 router.post('/', auth, async (req, res) => {
   try {
     const { title, description, status } = req.body;
+    if (!title) {
+      return res.status(400).json({ error: 'Title is required' });
+    }
 
     const task = await Task.create({ title, description, status });
+
     console.log('Task created:', task.id);
     res.status(201).json(task);
   } catch (err) {
@@ -59,7 +63,6 @@ router.put('/:id', auth, async (req, res) => {
 router.delete('/:id', auth, async (req, res) => {
   try {
     const deletedTask = await Task.delete(req.params.id);
-    const result = 'deleted';
 
     if (!deletedTask) {
       return res.status(404).json({ error: 'Task not found' });
@@ -67,10 +70,10 @@ router.delete('/:id', auth, async (req, res) => {
 
     console.log('Task deleted:', deletedTask.id);
     res.json({ message: 'Task deleted successfully' });
+
   } catch (err) {
     console.error('Error deleting task:', err);
     res.status(500).json({ error: 'Internal server error' });
   }
 });
-
 module.exports = router;

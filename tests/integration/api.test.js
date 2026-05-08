@@ -113,3 +113,33 @@ describe('POST /tasks', () => {
     expect(res.body.status).toBe('todo');
   });
 });
+
+let token;
+
+beforeAll(() => {
+  token = generateToken();
+});
+
+it('should return 400 when title is missing', async () => {
+  const res = await request(app)
+    .post('/tasks')
+    .set('Authorization', `Bearer ${token}`)
+    .send({}); 
+  expect(res.statusCode).toBe(400);
+});
+
+it('should return 401 with invalid token', async () => {
+  const res = await request(app)
+    .get('/tasks')
+    .set('Authorization', 'Bearer invalidtoken');
+
+  expect(res.statusCode).toBe(401);
+});
+
+it('should return 400 when username missing', async () => {
+  const res = await request(app)
+    .post('/auth/login')
+    .send({ password: 'admin123' });
+
+  expect(res.statusCode).toBe(400);
+});

@@ -1,0 +1,25 @@
+services:
+  db:
+    image: postgres:16
+    container_name: taskboard-db
+    environment:
+      POSTGRES_USER: taskboard
+      POSTGRES_PASSWORD: taskboard123
+      POSTGRES_DB: taskboard
+    ports:
+      - "5432:5432"
+    volumes:
+      - db_data:/var/lib/postgresql/data
+
+  app:
+    build: .
+    ports:
+      - "3000:3000"
+    depends_on:
+      - db
+    environment:
+      DATABASE_URL: postgresql://taskboard:taskboard123@db:5432/taskboard
+      JWT_SECRET: secret
+
+volumes:
+  db_data:
