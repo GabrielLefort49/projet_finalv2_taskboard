@@ -141,6 +141,9 @@ Par exemple :
 - un job test doit réussir avant un job build
 - un job build doit réussir avant un job deploy
 
+### Mise en place 
+
+![alt text](assets/etape4/image.png)
 
 ## Etape 5: Déploiement local via SSH
 

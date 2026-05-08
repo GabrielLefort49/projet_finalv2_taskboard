@@ -2,6 +2,7 @@ node_modules/
 coverage/
 *.log
 .env
+.ssh/
 .DS_Store
 dist/
 build/

@@ -1,0 +1,29 @@
+FROM ubuntu:22.04
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    ca-certificates \
+    curl \
+    docker.io \
+    openssh-server \
+    && rm -rf /var/lib/apt/lists/* \
+    && mkdir /var/run/sshd
+
+RUN useradd -m -s /bin/bash deployer
+
+RUN mkdir -p /home/deployer/.ssh && \
+    chmod 700 /home/deployer/.ssh
+
+COPY authorized_keys /home/deployer/.ssh/authorized_keys
+COPY entrypoint.sh /usr/local/bin/ssh-entrypoint
+
+RUN chmod 600 /home/deployer/.ssh/authorized_keys && \
+    chown -R deployer:deployer /home/deployer/.ssh && \
+    chmod +x /usr/local/bin/ssh-entrypoint && \
+    sed -i 's/#PasswordAuthentication yes/PasswordAuthentication no/' /etc/ssh/sshd_config && \
+    sed -i 's/#PubkeyAuthentication yes/PubkeyAuthentication yes/' /etc/ssh/sshd_config && \
+    printf '\nPermitRootLogin no\nAllowUsers deployer\n' >> /etc/ssh/sshd_config
+
+EXPOSE 22
+
+ENTRYPOINT ["/usr/local/bin/ssh-entrypoint"]
+CMD ["/usr/sbin/sshd", "-D", "-e"]
